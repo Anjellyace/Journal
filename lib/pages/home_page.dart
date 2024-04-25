@@ -9,6 +9,15 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  TextEditingController textEditingController = TextEditingController();
+  void openDialogBox ({String? docID}) {
+    showDialog(context: context, builder: (context) => AlertDialog(
+      content: TextField(
+        controller: textEditingController,
+      ),
+    ))
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,7 +33,20 @@ class _HomePageState extends State<HomePage> {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
-      body: ListView(
+      body: StreamBuilder(
+        stream: tasks.getTasks,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            List tasksList = snapshot.data.docs;
+            return ListView.builder(
+              itemBuilder: (context, index) {
+                DocumentSnapshot doc =  tasksList[index];
+                return JournalTile(
+                  data: doc['task'],)
+              }
+            )
+          }
+        }
         children: [JournalTile()],
       ),
       backgroundColor: Color.fromARGB(255, 247, 150, 182),
